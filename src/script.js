@@ -40,6 +40,7 @@ function displaySidebar(){
     
     const projectNameInput = document.createElement("input");
     projectNameInput.placeholder = "Project Name";
+    projectNameInput.classList.add("project-name-input");
 
     const addProjectButton = document.createElement("button");
     addProjectButton.textContent = "Add Project";
@@ -65,6 +66,7 @@ function displaySidebar(){
             // Check if the project already exists
             if (projects.some(p => p.getProjectName() === projectName)) {
                 alert("Project already exists.");
+                projectNameInput.value = ""; // Clear the input field
                 return;
             }
             projects.push(project);
@@ -114,20 +116,29 @@ function projectContainer(name){
 
     const projectTitle = document.createElement("h2");
     projectTitle.textContent = name;
+    projectTitle.classList.add("project-title");
 
     const deleteProjectButton = document.createElement("button");
     deleteProjectButton.textContent = "Delete Project";
 
-    deleteProjectButton.addEventListener("click", () => {
+    deleteProjectButton.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent the click event from bubbling up to the project container
         const projectIndex = projects.findIndex(p => p.getProjectName() === name);
         if (projectIndex !== -1) {
             projects.splice(projectIndex, 1);
             projectContainer.remove();
+
+            const mainContent = document.querySelector(".main");
+            mainContent.innerHTML = "<h1>Select a project</h1>"; // Clear previous content
+            
+
         }
     });
 
     projectContainer.addEventListener("click", () => {
-        projectMainContainer(name);
+        const projectName = projectTitle.textContent;
+
+        projectMainContainer(projectName);
     });
 
 
@@ -161,9 +172,8 @@ function projectMainContainer(name){
 
     const project = projects.find(p => p.getProjectName() === name);
     project.getProjectTasks().forEach(task => {
-        const taskItem = document.createElement("li");
-        taskItem.textContent = task.getTaskName();
-        tasksList.appendChild(taskItem);
+        const taskElement = taskContainer(task.getTaskName(), name);
+        tasksList.appendChild(taskElement);
     });
 
     
@@ -222,12 +232,23 @@ function taskInputContainer() {
         const taskDueDate = taskDueDateInput.value;
         const taskPriority = taskPrioritySelect.value;
 
+
         if (taskName && taskDescription && taskDueDate && taskPriority) {
-            const project = projects.find(p => p.getProjectName() === taskName);
-            const newTask = new Task(taskName, taskDescription, taskDueDate, taskPriority, project);
-            project.addTask(newTask);
+            const projectName = document.querySelector(".main h1").textContent.split(": ")[1];
+            const project = projects.find(p => p.getProjectName() === projectName);
+            // Check if the task already exists
+            if (project.getProjectTasks().some(task => task.getTaskName() === taskName)) {
+                alert("Task already exists in the project.");
+                return;
+            }
+            const task = new Task(taskName, taskDescription, taskDueDate, taskPriority, projectName);
+            project.addTask(task);
+           
+
+            const mainContent = document.querySelector(".main");
+            mainContent.appendChild(taskContainer(taskName, projectName));
+
             container.remove();
-            projectMainContainer(project.getProjectName());
         } else {
             alert("Please fill in all fields.");
         }
@@ -256,30 +277,70 @@ function taskInputContainer() {
     return container;
 }
 
-function taskContainer(name){
+function taskContainer(name, projectName) {
     const taskContainer = document.createElement("div");
+    const project = projects.find(p => p.getProjectName() === projectName);
     taskContainer.classList.add("task-container");
     taskContainer.style.border = "1px solid black";
     taskContainer.style.padding = "10px";
     taskContainer.style.margin = "10px";
     taskContainer.style.borderRadius = "5px";
 
+    
+
+    const task = project.getProjectTasks().find(task => task.getTaskName() === name);
+
     const taskTitle = document.createElement("h2");
-    taskTitle.textContent = name;
+    taskTitle.textContent = task.getTaskName();
+
+    const taskDescription = document.createElement("p");
+    taskDescription.textContent = task.getTaskDescription();
+
+    const taskDueDate = document.createElement("p");
+    taskDueDate.textContent = `Due Date: ${task.getTaskDueDate()}`;
+
+    const taskPriority = document.createElement("p");
+    taskPriority.textContent = `Priority: ${task.getTaskPriority()}`;
+    
+    const roundDiv = document.createElement("div");
+    roundDiv.classList.add("round");
+    
+    // Create checkbox
+    const checkBox = document.createElement("input");
+    checkBox.type = "checkbox";
+    checkBox.id = "myCheckbox"; // Must match label's "for"
+    
+    // Create label
+    const label = document.createElement("label");
+    label.setAttribute("for", "myCheckbox");
+    
+    // Append to .round container
+    roundDiv.appendChild(checkBox);
+    roundDiv.appendChild(label);
+    
+    
+    
+
 
     const deleteTaskButton = document.createElement("button");
     deleteTaskButton.textContent = "Delete Task";
 
     deleteTaskButton.addEventListener("click", () => {
-        const projectIndex = projects.findIndex(p => p.getProjectName() === name);
-        if (projectIndex !== -1) {
-            projects.splice(projectIndex, 1);
+        const projectName = document.querySelector(".main h1").textContent.split(": ")[1];
+        const project = projects.find(p => p.getProjectName() === projectName);
+        const taskIndex = project.getProjectTasks().findIndex(task => task.getTaskName() === name);
+        if (taskIndex !== -1) {
+            project.getProjectTasks().splice(taskIndex, 1);
             taskContainer.remove();
         }
     });
 
     
     taskContainer.appendChild(taskTitle);
+    taskContainer.appendChild(taskDescription);
+    taskContainer.appendChild(taskDueDate);
+    taskContainer.appendChild(taskPriority);
+    taskContainer.appendChild(roundDiv);
     taskContainer.appendChild(deleteTaskButton);
 
     return taskContainer;
