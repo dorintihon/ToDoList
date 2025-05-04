@@ -33,5 +33,9 @@ export class Task {
         return this.completed;
     }
 
+    setTaskCompleted(completed) {
+        this.completed = completed;
+    }
+
     
 }

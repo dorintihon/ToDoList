@@ -308,11 +308,33 @@ function taskContainer(name, projectName) {
     // Create checkbox
     const checkBox = document.createElement("input");
     checkBox.type = "checkbox";
-    checkBox.id = "myCheckbox"; // Must match label's "for"
+    
+
+    const checkBoxId = `checkbox-${projectName}-${name}`.replace(/\s+/g, '-').toLowerCase();
+    checkBox.id = checkBoxId;
+    
+    checkBox.addEventListener("change", () => {
+        if (checkBox.checked) {
+            taskTitle.style.textDecoration = "line-through";
+            taskTitle.style.color = "grey";
+            task.setTaskCompleted(true);
+        } else {
+            taskTitle.style.textDecoration = "none";
+            taskTitle.style.color = "black";
+            task.setTaskCompleted(false);
+        }
+    });
     
     // Create label
     const label = document.createElement("label");
-    label.setAttribute("for", "myCheckbox");
+    label.setAttribute("for", checkBoxId);
+
+    // if task completed, set checkbox to checked
+    if (task.getTaskCompleted()) {
+        checkBox.checked = true;
+        taskTitle.style.textDecoration = "line-through";
+        taskTitle.style.color = "grey";
+    }
     
     // Append to .round container
     roundDiv.appendChild(checkBox);
@@ -346,12 +368,40 @@ function taskContainer(name, projectName) {
     return taskContainer;
 }
 
+function loadTestData() {
+    const project1 = new Project("Work");
+    const project2 = new Project("Personal");
+
+    const task1 = new Task("Send Email", "Email the client with project update", "2025-05-10", "High", "Work");
+    const task2 = new Task("Prepare Report", "Draft Q2 report", "2025-05-12", "Medium", "Work");
+
+    const task3 = new Task("Buy Groceries", "Get vegetables and milk", "2025-05-05", "Low", "Personal");
+    const task4 = new Task("Call Mom", "Weekly check-in", "2025-05-06", "High", "Personal");
+
+    project1.addTask(task1);
+    project1.addTask(task2);
+
+    project2.addTask(task3);
+    project2.addTask(task4);
+
+    projects.push(project1, project2);
+
+    const projectList = document.querySelector("ul.project-list");
+
+    [project1, project2].forEach(proj => {
+        const projEl = projectContainer(proj.getProjectName());
+        projectList.appendChild(projEl);
+    });
+
+    // Optionally load the first project into main content
+    projectMainContainer("Work");
+}
 
 
 
 
 DisplayPage();
-
+loadTestData();
 
 
   
