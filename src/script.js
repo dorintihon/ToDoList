@@ -1,6 +1,8 @@
 import "./styles.css";
 import { Task } from "./task.js";
 import { Project } from "./project.js";
+import { taskContainer } from "./ui/taskRenderer.js";
+import { projectContainer } from "./ui/projectRenderer.js";
 
 if (process.env.NODE_ENV !== 'production') {
     console.log('Looks like we are in development mode!');
@@ -71,7 +73,7 @@ function displaySidebar(){
             }
             projects.push(project);
             
-            const projectElement = projectContainer(projectName);
+            const projectElement = projectContainer(projectName, () => deleteProject(projectName), () => selectProject(projectName)); 
 
             projectList.appendChild(projectElement);
 
@@ -84,7 +86,6 @@ function displaySidebar(){
     
     projectListContainer.appendChild(projectListTitle);
     projectListContainer.appendChild(projectList);
-
 
 
 
@@ -106,48 +107,6 @@ function displayMainContent(){
     return main;
 }
 
-function projectContainer(name){
-    const projectContainer = document.createElement("div");
-    projectContainer.classList.add("project-container");
-    projectContainer.style.border = "1px solid black";
-    projectContainer.style.padding = "10px";
-    projectContainer.style.margin = "10px";
-    projectContainer.style.borderRadius = "5px";
-
-    const projectTitle = document.createElement("h2");
-    projectTitle.textContent = name;
-    projectTitle.classList.add("project-title");
-
-    const deleteProjectButton = document.createElement("button");
-    deleteProjectButton.textContent = "Delete Project";
-
-    deleteProjectButton.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent the click event from bubbling up to the project container
-        const projectIndex = projects.findIndex(p => p.getProjectName() === name);
-        if (projectIndex !== -1) {
-            projects.splice(projectIndex, 1);
-            projectContainer.remove();
-
-            const mainContent = document.querySelector(".main");
-            mainContent.innerHTML = "<h1>Select a project</h1>"; // Clear previous content
-            
-
-        }
-    });
-
-    projectContainer.addEventListener("click", () => {
-        const projectName = projectTitle.textContent;
-
-        projectMainContainer(projectName);
-    });
-
-
-
-    projectContainer.appendChild(projectTitle);
-    projectContainer.appendChild(deleteProjectButton);
-
-    return projectContainer;
-}
 
 function projectMainContainer(name){
     const mainContent = document.querySelector(".main");
@@ -172,7 +131,12 @@ function projectMainContainer(name){
 
     const project = projects.find(p => p.getProjectName() === name);
     project.getProjectTasks().forEach(task => {
-        const taskElement = taskContainer(task.getTaskName(), name);
+        const taskElement = taskContainer(task, name, () => {
+            const index = project.getProjectTasks().findIndex(t => t === task);
+            if (index !== -1) {
+                project.getProjectTasks().splice(index, 1);
+            }
+        });
         tasksList.appendChild(taskElement);
     });
 
@@ -246,7 +210,12 @@ function taskInputContainer() {
            
 
             const mainContent = document.querySelector(".main");
-            mainContent.appendChild(taskContainer(taskName, projectName));
+            mainContent.appendChild(taskContainer(task, projectName, () => {
+                const index = project.getProjectTasks().findIndex(t => t === task);
+                if (index !== -1) {
+                    project.getProjectTasks().splice(index, 1);
+                }
+            }));
 
             container.remove();
         } else {
@@ -277,102 +246,13 @@ function taskInputContainer() {
     return container;
 }
 
-function taskContainer(name, projectName) {
-    const taskContainer = document.createElement("div");
-    const project = projects.find(p => p.getProjectName() === projectName);
-    taskContainer.classList.add("task-container");
-    taskContainer.style.border = "1px solid black";
-    taskContainer.style.padding = "10px";
-    taskContainer.style.margin = "10px";
-    taskContainer.style.borderRadius = "5px";
 
-    
-
-    const task = project.getProjectTasks().find(task => task.getTaskName() === name);
-
-    const taskTitle = document.createElement("h2");
-    taskTitle.textContent = task.getTaskName();
-
-    const taskDescription = document.createElement("p");
-    taskDescription.textContent = task.getTaskDescription();
-
-    const taskDueDate = document.createElement("p");
-    taskDueDate.textContent = `Due Date: ${task.getTaskDueDate()}`;
-
-    const taskPriority = document.createElement("p");
-    taskPriority.textContent = `Priority: ${task.getTaskPriority()}`;
-    
-    const roundDiv = document.createElement("div");
-    roundDiv.classList.add("round");
-    
-    // Create checkbox
-    const checkBox = document.createElement("input");
-    checkBox.type = "checkbox";
-    
-
-    const checkBoxId = `checkbox-${projectName}-${name}`.replace(/\s+/g, '-').toLowerCase();
-    checkBox.id = checkBoxId;
-    
-    checkBox.addEventListener("change", () => {
-        if (checkBox.checked) {
-            taskTitle.style.textDecoration = "line-through";
-            taskTitle.style.color = "grey";
-            task.setTaskCompleted(true);
-        } else {
-            taskTitle.style.textDecoration = "none";
-            taskTitle.style.color = "black";
-            task.setTaskCompleted(false);
-        }
-    });
-    
-    // Create label
-    const label = document.createElement("label");
-    label.setAttribute("for", checkBoxId);
-
-    // if task completed, set checkbox to checked
-    if (task.getTaskCompleted()) {
-        checkBox.checked = true;
-        taskTitle.style.textDecoration = "line-through";
-        taskTitle.style.color = "grey";
-    }
-    
-    // Append to .round container
-    roundDiv.appendChild(checkBox);
-    roundDiv.appendChild(label);
-    
-    
-    
-
-
-    const deleteTaskButton = document.createElement("button");
-    deleteTaskButton.textContent = "Delete Task";
-
-    deleteTaskButton.addEventListener("click", () => {
-        const projectName = document.querySelector(".main h1").textContent.split(": ")[1];
-        const project = projects.find(p => p.getProjectName() === projectName);
-        const taskIndex = project.getProjectTasks().findIndex(task => task.getTaskName() === name);
-        if (taskIndex !== -1) {
-            project.getProjectTasks().splice(taskIndex, 1);
-            taskContainer.remove();
-        }
-    });
-
-    
-    taskContainer.appendChild(taskTitle);
-    taskContainer.appendChild(taskDescription);
-    taskContainer.appendChild(taskDueDate);
-    taskContainer.appendChild(taskPriority);
-    taskContainer.appendChild(roundDiv);
-    taskContainer.appendChild(deleteTaskButton);
-
-    return taskContainer;
-}
 
 function loadTestData() {
     const project1 = new Project("Work");
     const project2 = new Project("Personal");
 
-    const task1 = new Task("Send Email", "Email the client with project update", "2025-05-10", "High", "Work");
+    const task1 = new Task("Send Emal", "Email the client with project update", "2025-05-10", "High", "Work");
     const task2 = new Task("Prepare Report", "Draft Q2 report", "2025-05-12", "Medium", "Work");
 
     const task3 = new Task("Buy Groceries", "Get vegetables and milk", "2025-05-05", "Low", "Personal");
@@ -386,10 +266,12 @@ function loadTestData() {
 
     projects.push(project1, project2);
 
+
     const projectList = document.querySelector("ul.project-list");
 
     [project1, project2].forEach(proj => {
-        const projEl = projectContainer(proj.getProjectName());
+        const projName = proj.getProjectName();
+        const projEl = projectContainer(projName, () => deleteProject(projName), () => selectProject(projName));
         projectList.appendChild(projEl);
     });
 
@@ -397,6 +279,18 @@ function loadTestData() {
     projectMainContainer("Work");
 }
 
+function deleteProject(projectName) {
+    const projectIndex = projects.findIndex(p => p.getProjectName() === projectName);
+    if (projectIndex !== -1) {
+        projects.splice(projectIndex, 1);
+        const mainContent = document.querySelector(".main");
+        mainContent.innerHTML = "<h1>Select a project</h1> "; // Clear previous content
+    }
+}
+
+function selectProject(projectName){
+    projectMainContainer(projectName);
+}
 
 
 
