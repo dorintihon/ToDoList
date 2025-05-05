@@ -62,10 +62,13 @@ export function taskContainer(task, projectName, onDeleteCallback) {
     const checkBoxElement = createCheckbox(task, projectName, (completed) => {
         if (completed) {
             taskTitle.style.textDecoration = "line-through";
-            taskTitle.style.color = "grey";
+            taskTitle.style.color = "#dadada";
+            taskPriority.style.color = "black";
+            taskPriority.style.borderColor = "#dadada";
         } else {
             taskTitle.style.textDecoration = "none";
             taskTitle.style.color = "black";
+
         }
     });
 
@@ -102,4 +105,9 @@ export function taskContainer(task, projectName, onDeleteCallback) {
     taskContainer.appendChild(deleteTaskButton);
 
     return taskContainer;
+}
+
+// TODO: Implement this function to set the color of the task priority based on the task's priority level
+function setTaskPriorityColor() {
+    
 }
