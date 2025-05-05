@@ -36,12 +36,14 @@ export function projectContainer(project, onDeleteCallback, onClickCallback) {
 
     projectContainer.addEventListener("mouseenter", () => {
         projectContainer.appendChild(deleteProjectButton);
+        projectContainer.style.boxShadow = "0 10px 10px rgba(0, 0, 0, 0.3)";
     });
 
     projectContainer.addEventListener("mouseleave", () => {
         
         if (projectContainer.contains(deleteProjectButton)) {
             projectContainer.removeChild(deleteProjectButton);
+            projectContainer.style.boxShadow = "none";
         }
     });
 

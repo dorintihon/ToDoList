@@ -9,8 +9,9 @@ export function taskContainer(task, projectName, onDeleteCallback) {
     taskContainer.style.gridTemplateRows = "min-content min-content min-content";
     taskContainer.style.gap = "10px";
     taskContainer.style.padding = "10px";
-    taskContainer.style.border = "1px solid gray";
+  
     taskContainer.style.borderRadius = "5px";
+    taskContainer.style.boxShadow = "0 10px 10px rgba(0, 0, 0, 0.3)";
 
 
     const taskTitle = document.createElement("h2");

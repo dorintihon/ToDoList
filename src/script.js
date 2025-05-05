@@ -42,6 +42,9 @@ function displaySidebar(){
     const projectNameInput = document.createElement("input");
     projectNameInput.placeholder = "Project Name";
     projectNameInput.classList.add("project-name-input");
+    projectNameInput.style.border = "none";
+    projectNameInput.style.borderRadius = "5px";
+    projectNameInput.style.paddingLeft = "10px";
 
     const addProjectButton = document.createElement("button");
     addProjectButton.textContent = "Add Project";
