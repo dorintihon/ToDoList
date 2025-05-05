@@ -10,6 +10,7 @@ export function projectContainer(project, onDeleteCallback, onClickCallback) {
     projectTitle.textContent = project;
 
     const deleteProjectButton = document.createElement("button");
+    deleteProjectButton.classList.add("delete-project-button");
     deleteProjectButton.textContent = "Delete Project";
 
     deleteProjectButton.addEventListener("click", (event) => {

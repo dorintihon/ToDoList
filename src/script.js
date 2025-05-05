@@ -30,7 +30,7 @@ function DisplayPage(){
 function displaySidebar(){
     const sidebar = document.createElement("div");
     sidebar.classList.add("sidebar");
-    // sidebar.style.backgroundColor = "blue";
+    sidebar.style.backgroundColor = "rgba(207, 206, 205, 0.69)";
     sidebar.style.display = "grid";
     sidebar.style.gridTemplateColumns = "1fr 1fr";
     sidebar.style.gridTemplateRows = "100px 50px 3fr";
@@ -128,6 +128,8 @@ function projectMainContainer(name){
     tasksList.style.listStyleType = "none";
     tasksList.style.padding = "0";
     tasksList.style.margin = "0";
+    tasksList.style.display = "grid";
+    tasksList.style.rowGap = "10px";
 
     const project = projects.find(p => p.getProjectName() === name);
     project.getProjectTasks().forEach(task => {
@@ -252,7 +254,7 @@ function loadTestData() {
     const project1 = new Project("Work");
     const project2 = new Project("Personal");
 
-    const task1 = new Task("Send Emal", "Email the client with project update", "2025-05-10", "High", "Work");
+    const task1 = new Task("Send Email", "Email the client with project update", "2025-05-10", "High", "Work");
     const task2 = new Task("Prepare Report", "Draft Q2 report", "2025-05-12", "Medium", "Work");
 
     const task3 = new Task("Buy Groceries", "Get vegetables and milk", "2025-05-05", "Low", "Personal");

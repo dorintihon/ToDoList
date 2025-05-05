@@ -6,7 +6,7 @@
 
 .round label {
   background-color: #fff;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   border-radius: 50%;
 
   height: 28px;
@@ -41,6 +41,27 @@
 
 .round input[type="checkbox"]:checked + label:after {
   opacity: 1;
+}
+
+.task-container > * {
+  margin: 0;
+  align-self: center;
+}
+
+button {
+  background-color: #2b97ef;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  padding: 10px 20px;
+}
+
+.delete-task-button, .delete-project-button{
+  background-color: #dadada;
+}
+.delete-task-button:hover, .delete-project-button:hover {
+  background-color: #2b97ef;
 }
 
 
