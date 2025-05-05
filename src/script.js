@@ -11,8 +11,6 @@ if (process.env.NODE_ENV !== 'production') {
 const projects = [];
 
 
-
-
 function DisplayPage(){
     const body = document.querySelector("body");
     body.classList.add("body");
@@ -20,7 +18,6 @@ function DisplayPage(){
     body.style.gridTemplateColumns = "1fr 3fr";
     body.style.gridTemplateRows = "1fr";
     body.style.height = "100vh";
-    body.style.columnGap = "10px";
     
 
     body.appendChild(displaySidebar());
@@ -35,10 +32,12 @@ function displaySidebar(){
     sidebar.style.gridTemplateColumns = "1fr 1fr";
     sidebar.style.gridTemplateRows = "100px 50px 3fr";
     sidebar.style.columnGap = "10px";
+    sidebar.style.padding = "10px";
 
     const sidebarTitle = document.createElement("h1");
     sidebarTitle.textContent = "ToDo List";
     sidebarTitle.style.gridColumn = "1 / -1";
+    sidebarTitle.style.alignSelf = "center";
     
     const projectNameInput = document.createElement("input");
     projectNameInput.placeholder = "Project Name";
@@ -49,7 +48,6 @@ function displaySidebar(){
 
     const projectListContainer = document.createElement("div");
     projectListContainer.classList.add("project-list");
-    projectListContainer.style.border = "1px solid black";
     projectListContainer.style.gridColumn = "1 / -1";
 
     const projectListTitle = document.createElement("h2");
@@ -102,7 +100,6 @@ function displayMainContent(){
     const mainTitle = document.createElement("h1");
     mainTitle.textContent = "Main Content";
     main.appendChild(mainTitle);
-    // main.style.backgroundColor = "green";
 
     return main;
 }
@@ -111,12 +108,20 @@ function displayMainContent(){
 function projectMainContainer(name){
     const mainContent = document.querySelector(".main");
     mainContent.innerHTML = ""; // Clear previous content
+    mainContent.style.display = "grid";
+    mainContent.style.rowGap = "10px";
+    mainContent.style.padding = "10px";
+    mainContent.style.gridTemplateColumns = "3fr 1fr";
+    mainContent.style.gridTemplateRows = "100px min-content";
     const projectTitleElement = document.createElement("h1");
     projectTitleElement.textContent = `Project: ${name}`;
+    projectTitleElement.style.alignSelf= "center";
     
 
     const addTaskButton = document.createElement("button");
     addTaskButton.textContent = "Add Task";
+    addTaskButton.style.height = "50px";
+    addTaskButton.style.alignSelf = "center";   
 
     addTaskButton.addEventListener("click", () => {
         const popup = taskInputContainer();
@@ -130,6 +135,7 @@ function projectMainContainer(name){
     tasksList.style.margin = "0";
     tasksList.style.display = "grid";
     tasksList.style.rowGap = "10px";
+    tasksList.style.gridColumn = "1 / -1";
 
     const project = projects.find(p => p.getProjectName() === name);
     project.getProjectTasks().forEach(task => {
@@ -211,13 +217,7 @@ function taskInputContainer() {
             project.addTask(task);
            
 
-            const mainContent = document.querySelector(".main");
-            mainContent.appendChild(taskContainer(task, projectName, () => {
-                const index = project.getProjectTasks().findIndex(t => t === task);
-                if (index !== -1) {
-                    project.getProjectTasks().splice(index, 1);
-                }
-            }));
+            projectMainContainer(projectName); // Refresh the project view
 
             container.remove();
         } else {

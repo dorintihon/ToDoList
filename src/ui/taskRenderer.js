@@ -5,11 +5,11 @@ export function taskContainer(task, projectName, onDeleteCallback) {
     const taskContainer = document.createElement("div");
     taskContainer.classList.add("task-container");
     taskContainer.style.display = "grid";
-    taskContainer.style.gridTemplateColumns = "1fr 3fr 1fr";
-    taskContainer.style.gridTemplateRows = "32px min-content 1fr";
+    taskContainer.style.gridTemplateColumns = "50px 3fr 1fr";
+    taskContainer.style.gridTemplateRows = "min-content min-content min-content";
     taskContainer.style.gap = "10px";
     taskContainer.style.padding = "10px";
-    taskContainer.style.border = "1px solid black";
+    taskContainer.style.border = "1px solid gray";
     taskContainer.style.borderRadius = "5px";
 
 
@@ -41,20 +41,8 @@ export function taskContainer(task, projectName, onDeleteCallback) {
     taskPriority.style.justifySelf = "center";
     taskPriority.style.padding = "5px 10px";
 
-    if (task.getTaskPriority() === "High") {
-        taskPriority.style.backgroundColor = "rgba(207, 206, 205, 0.69)";
-        taskPriority.style.color = "rgba(255, 0, 0, 0.8)";
-        taskPriority.style.borderColor = "rgba(255, 0, 0, 0.8)";
-    }else if (task.getTaskPriority() === "Medium") {
-        taskPriority.style.backgroundColor = "rgba(207, 206, 205, 0.69)";
-        taskPriority.style.color = "rgba(255, 101, 0, 0.6)";
-        taskPriority.style.borderColor = "rgba(255, 101, 0, 0.6)";
-    } else if (task.getTaskPriority() === "Low") {
-        taskPriority.style.backgroundColor = "rgba(207, 206, 205, 0.69)";
-        taskPriority.style.color = "rgba(2, 150, 0, 1)";
-        taskPriority.style.borderColor = "rgba(2, 150, 0, 1)";
-        
-    }
+    // Set the color of the task priority
+    setTaskPriorityColor(taskPriority, task.getTaskPriority());
 
     
     
@@ -68,6 +56,7 @@ export function taskContainer(task, projectName, onDeleteCallback) {
         } else {
             taskTitle.style.textDecoration = "none";
             taskTitle.style.color = "black";
+            setTaskPriorityColor(taskPriority, task.getTaskPriority());
 
         }
     });
@@ -96,18 +85,46 @@ export function taskContainer(task, projectName, onDeleteCallback) {
         taskContainer.remove();
     });
 
+    taskContainer.addEventListener("mouseenter", () => {
+        taskContainer.appendChild(deleteTaskButton);
+    });
+
+    taskContainer.addEventListener("mouseleave", () => {
+        
+        if (taskContainer.contains(deleteTaskButton)) {
+            taskContainer.removeChild(deleteTaskButton);
+        }
+    });
+
     
     taskContainer.appendChild(taskTitle);
     taskContainer.appendChild(taskDescription);
     taskContainer.appendChild(taskDueDate);
     taskContainer.appendChild(taskPriority);
     taskContainer.appendChild(checkBoxElement);
-    taskContainer.appendChild(deleteTaskButton);
 
     return taskContainer;
 }
 
-// TODO: Implement this function to set the color of the task priority based on the task's priority level
-function setTaskPriorityColor() {
-    
+function setTaskPriorityColor(element, priority) {
+    element.style.backgroundColor = "rgba(207, 206, 205, 0.69)";
+
+    switch (priority) {
+        case "High":
+            element.style.color = "rgba(255, 0, 0, 0.8)";
+            element.style.borderColor = "rgba(255, 0, 0, 0.8)";
+            break;
+        case "Medium":
+            element.style.color = "rgba(255, 101, 0, 0.6)";
+            element.style.borderColor = "rgba(255, 101, 0, 0.6)";
+            break;
+        case "Low":
+            element.style.color = "rgba(2, 150, 0, 1)";
+            element.style.borderColor = "rgba(2, 150, 0, 1)";
+            break;
+        default:
+            element.style.color = "black";
+            element.style.borderColor = "black";
+            break;
+    }
 }
