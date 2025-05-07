@@ -56,27 +56,15 @@ button {
   padding: 10px 20px;
 }
 
-.delete-task-button, .delete-project-button{
+.delete-task-button,
+.delete-project-button {
   background-color: #dadada;
 }
-.delete-task-button:hover, .delete-project-button:hover {
+.delete-task-button:hover,
+.delete-project-button:hover {
   background-color: #2b97ef;
 }
 
 .project-container:hover {
   background-color: #f0f0f0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
